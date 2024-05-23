@@ -1,0 +1,19 @@
+{
+    "meta": {
+        "version": "OpenDevEd_jsonUploaderV01",
+        "query":"Edtech",
+        "totalResults": "5516077",
+        "source": "scopus",
+        "sourceFormat": "original|chunked",
+        "date": "2024-05-23T10:31:00Z",
+        "searchScope": "title|title_abstract|title_abstract_keywords|fulltext",
+        "page": "1",
+        "resultsPerPage": "200",
+        "firstItem": "1",
+        "startingPage":"",
+        "endingPage":"",
+        "filters":{},
+        "groupBy":"",
+        "sortBy":{"flied":"relevence","order":"asc|desc"}
+    }
+}
