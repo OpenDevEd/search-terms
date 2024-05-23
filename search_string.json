@@ -1,0 +1,55 @@
+{
+    "meta": {
+        "version": "OpenDevEd_jsonUploaderV01",
+        "query":"Edtech",
+        "totalResults": "5516077",
+        "source": "scopus",
+        "sourceFormat": "original|chunked",
+        "date": "2024-05-23T10:31:00Z",
+        "searchScope": "title|title_abstract|title_abstract_keywords|fulltext",
+        "page": "1",
+        "resultsPerPage": "200",
+        "firstItem": "1",
+        "startingPage":"",
+        "endingPage":"",
+        "filters":{},
+        "groupBy":"",
+        "sortBy":{"flied":"relevence","order":"asc|desc"}
+    },
+    "results": {
+        "search-results": {
+            "opensearch:totalResults": "5516077",
+            "opensearch:itemsPerPage": "200",
+            "opensearch:Query": {
+                "@role": "request",
+                "@searchTerms": "heart",
+                "@startPage": ""
+            },
+            "cursor": {
+                "@current": "*",
+                "@next": "AoJRs5tNMjItczIuMC04NTE5MjgwNjYxNw=="
+            },
+            "link": [
+                {
+                    "@_fa": "true",
+                    "@ref": "self",
+                    "@href": "https://api.elsevier.com/content/search/scopus?cursor=*&count=200&query=heart&view=STANDARD",
+                    "@type": "application/json"
+                },
+                {
+                    "@_fa": "true",
+                    "@ref": "first",
+                    "@href": "https://api.elsevier.com/content/search/scopus?cursor=*&count=200&query=heart&view=STANDARD",
+                    "@type": "application/json"
+                },
+                {
+                    "@_fa": "true",
+                    "@ref": "next",
+                    "@href": "https://api.elsevier.com/content/search/scopus?cursor=AoJRs5tNMjItczIuMC04NTE5MjgwNjYxNw%3D%3D&count=200&query=heart&view=STANDARD",
+                    "@type": "application/json"
+                }
+            ],
+            "entry": []
+        }
+    }
+}
