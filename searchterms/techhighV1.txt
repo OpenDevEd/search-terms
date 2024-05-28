@@ -21,10 +21,13 @@ e-book
 e-reader
 ebook
 edtech
-education technolog
+EdTech
+educational technology
+educational technologies
+education technology
+education technologies
 educational gaming
-educational software application
-educational technolog
+educational software
 elearning
 electronic textbook
 ereader
@@ -40,9 +43,9 @@ interactive multimedia resource
 interactive whiteboard
 laptop
 learning analytics platform
+LMS
 learning management system
 learning platform
-LMS
 mobile app
 mobile education
 mobile learning
@@ -66,6 +69,7 @@ radio
 remote learning
 student data management system
 tablet
+technology assisted learning
 technology-assisted learning
 video
 virtual classroom
