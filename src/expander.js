@@ -18,8 +18,34 @@ For exmples, see searchterms/ssa.txt and searchterms/test.txt.
 */
 
 fs = require('fs');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
-const result = searchBuilder(process.argv.slice(2));
+const argv = yargs(hideBin(process.argv))
+  .usage('Usage: $0 <command> [options]')
+  .option('googlescholar', {
+    alias: 'g',
+    type: 'boolean',
+    description: 'Instead of AND use " "'
+  })
+  .option('length', {
+    alias: 'l',
+    type: 'boolean',
+    description: 'Show query string length.'
+  })
+  .command('$0 <query...>', 'Process search query.')
+  .demandCommand(1)
+  .strict()
+  .help()
+  .argv;
+
+let result = searchBuilder(argv.query);
+if (argv.googlescholar) {
+  result = result.replace(/AND/g, ' ');
+};
+if (argv.length) {
+  console.log("#length=" + result.length);
+}
 console.log(result);
 
 function searchBuilder(query) {
@@ -52,7 +78,10 @@ function searchBuilder(query) {
           //console.log("->"+resultarr[j]);
           if (resultarr[j].match(/\#(OR|AND)\s*$/)) {
             operator = ' ' + resultarr[j].match(/\#(OR|AND)\s*$/)[1] + ' ';
-            //console.log('operator: ' + operator);
+            /* if (resultarr[j].match(/\#(OR|AND)\s*$/)[1] == 'AND' && argv.googlescholar) {
+              operator = ' ';
+            } */
+            // console.log('operator: ' + operator);
             useoperator = true;
           }
           if (resultarr[j].match(/\#(\-)\s*$/)) {
@@ -76,7 +105,7 @@ function searchBuilder(query) {
       query[i] = quoteIfNeeded(query[i]);
     }
   }
-  searchQuery = query.join(' ');
+  searchQuery = query.join(' ');  
   // Allow use of [ and ] instead of ( and ).
   searchQuery = searchQuery.replace(/\[/gs, '(');
   searchQuery = searchQuery.replace(/\]/gs, ')');
