@@ -1,0 +1,26 @@
+{
+  "name": "search-terms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/expander.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npm install && npm link && search-terms-expander --help "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenDevEd/search-terms.git"
+  },
+  "author": "",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/OpenDevEd/search-terms/issues"
+  },
+  "homepage": "https://github.com/OpenDevEd/search-terms#readme",
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "bin": {
+    "search-terms-expander": "./src/expander.js"
+  }
+}
