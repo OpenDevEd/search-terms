@@ -23,79 +23,81 @@ const result = searchBuilder(process.argv.slice(2));
 console.log(result);
 
 function searchBuilder(query) {
-    //let isOr = false;
-    //let isLastOr = false;
-    let searchQuery = '';
-    // query = query.split(' ');
+  //let isOr = false;
+  //let isLastOr = false;
+  let searchQuery = '';
+  // query = query.split(' ');
 
-    for (let i = 0; i < query.length; i++) {
-        //console.log("->"+query[i]);
-        if (query[i].match(/(\w+)\.\.\./)) {
-            //console.log("expand: "+query[i]);
-            const key = query[i].match(/(\w+)\.\.\./)[1];
-            // open a file
-            let file = 'searchterms/' + key + '.txt';
-            if (!fs.existsSync(file)) {
-                file = `${os.homedir()}/.config/openalex-cli/searchterms/${key}.txt`;
-            }
-            // TODO: Throw error if file does not exist
-            //console.log("f="+file);
-            let result = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : key;
-            // split result into an array by new line
-            const resultarr = result.split(/\r?\n/);
-            result = '';
-            let operator = '';
-            let useoperator = false;
-            // remove comments from results file
-            for (let j = 0; j < resultarr.length; j++) {
-                //console.log("->"+resultarr[j]);
-                if (resultarr[j].match(/\#(OR|AND)\s*$/)) {
-                    operator = ' ' + resultarr[j].match(/\#(OR|AND)\s*$/)[1] + ' ';
-                    //console.log('operator: ' + operator);
-                    useoperator = true;
-                }
-                if (resultarr[j].match(/\#(\-)\s*$/)) {
-                    useoperator = true;
-                    operator = ' ';
-                    console.log('operator empty.');
-                }
-                const term = sanitise(resultarr[j].replace(/\#.+$/g, ''));
-                if (term != '') {
-                    result +=
-                        (result.match(/[\w\"\)]\s+$/) && !term.match(/^\s*\)/) ? operator : '') +
-                        (useoperator ? quoteIfNeeded(term) : term) +
-                        ' ';
-                }
-            }
-            result = query[i].replace(RegExp(key + '\\.\\.\\.'), result);
-            //console.log(result);
-            searchQuery += ` ${result}`;
-        } else {
-            // console.log('add: ' + query[i]);
-            searchQuery += ` ${quoteIfNeeded(query[i])} `;
+  for (let i = 0; i < query.length; i++) {
+    //console.log("->"+query[i]);
+    if (query[i].match(/(\w+)\.\.\./)) {
+      while (query[i].match(/(\w+)\.\.\./)) {
+        //console.log("expand: "+query[i]);
+        const key = query[i].match(/(\w+)\.\.\./)[1];
+        // open a file
+        let file = 'searchterms/' + key + '.txt';
+        if (!fs.existsSync(file)) {
+          file = `${os.homedir()}/.config/openalex-cli/searchterms/${key}.txt`;
         }
+        // TODO: Throw error if file does not exist
+        //console.log("f="+file);
+        let result = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : key;
+        // split result into an array by new line
+        const resultarr = result.split(/\r?\n/);
+        result = '';
+        let operator = '';
+        let useoperator = false;
+        // remove comments from results file
+        for (let j = 0; j < resultarr.length; j++) {
+          //console.log("->"+resultarr[j]);
+          if (resultarr[j].match(/\#(OR|AND)\s*$/)) {
+            operator = ' ' + resultarr[j].match(/\#(OR|AND)\s*$/)[1] + ' ';
+            //console.log('operator: ' + operator);
+            useoperator = true;
+          }
+          if (resultarr[j].match(/\#(\-)\s*$/)) {
+            useoperator = true;
+            operator = ' ';
+            console.log('operator empty.');
+          }
+          const term = sanitise(resultarr[j].replace(/\#.+$/g, ''));
+          if (term != '') {
+            result +=
+              (result.match(/[\w\"\)]\s+$/) && !term.match(/^\s*\)/) ? operator : '') +
+              (useoperator ? quoteIfNeeded(term) : term) +
+              ' ';
+          }
+        }
+        query[i] = query[i].replace(RegExp(key + '\\.\\.\\.'), result);
+        //console.log(result);
+      }
+    } else {
+      // console.log('add: ' + query[i]);
+      query[i] = quoteIfNeeded(query[i]);
     }
-    // Allow use of [ and ] instead of ( and ).
-    searchQuery = searchQuery.replace(/\[/gs, '(');
-    searchQuery = searchQuery.replace(/\]/gs, ')');
-    //console.log('Final query: ' + searchQuery);
-    return searchQuery;
+  }
+  searchQuery = query.join(' ');
+  // Allow use of [ and ] instead of ( and ).
+  searchQuery = searchQuery.replace(/\[/gs, '(');
+  searchQuery = searchQuery.replace(/\]/gs, ')');
+  //console.log('Final query: ' + searchQuery);
+  return searchQuery;
 }
 
 function sanitise(str) {
-    let term = str;
-    term = term.replace(/\t+/gs, ' ');
-    term = term.replace(/ +/gs, ' ');
-    term = term.replace(/^ +/gs, '');
-    term = term.replace(/ +$/gs, '');
-    return term;
+  let term = str;
+  term = term.replace(/\t+/gs, ' ');
+  term = term.replace(/ +/gs, ' ');
+  term = term.replace(/^ +/gs, '');
+  term = term.replace(/ +$/gs, '');
+  return term;
 }
 
 function quoteIfNeeded(term) {
-    if (term.match(/ /) && !term.match(/^\".*\"$/)) {
-        term = `"${term}"`;
-    }
-    return term;
+  if (term.match(/ /) && !term.match(/^\".*\"$/)) {
+    term = `"${term}"`;
+  }
+  return term;
 }
 
 
