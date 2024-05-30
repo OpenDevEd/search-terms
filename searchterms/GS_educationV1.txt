@@ -1,0 +1,13 @@
+#OR
+(
+college
+early years
+further education
+K-12
+K-5
+kindergarten
+nursery
+primary education
+secondary education
+school
+)
