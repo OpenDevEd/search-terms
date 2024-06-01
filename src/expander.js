@@ -34,6 +34,11 @@ const argv = yargs(hideBin(process.argv))
     type: 'boolean',
     description: 'Show query string length.'
   })
+  .option('save', {
+    alias: 's',
+    type: 'string',
+    description: 'Provide a filename where the search strings and expansions are saved. Records are separated by \\x1E'
+  })
   .command('$0 <query...>', 'Process search query.')
   .demandCommand(1)
   .strict()
@@ -50,6 +55,8 @@ if (argv.length) {
 console.log(result);
 
 function searchBuilder(query) {
+  const separator = '\x1E';
+  let querylog = "# Query\n#-\n" + query + "\n" + separator;
   //let isOr = false;
   //let isLastOr = false;
   let searchQuery = '';
@@ -62,13 +69,16 @@ function searchBuilder(query) {
         //console.log("expand: "+query[i]);
         const key = query[i].match(/(\w+)\.\.\./)[1];
         // open a file
+        querylog += `# Term: ${key}\n`;
         let file = 'searchterms/' + key + '.txt';
         if (!fs.existsSync(file)) {
           file = `${os.homedir()}/.config/openalex-cli/searchterms/${key}.txt`;
         }
+        querylog += `# File: ${file}\n`;
         // TODO: Throw error if file does not exist
         //console.log("f="+file);
         let result = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : key;
+        querylog += `# Result\n#-\n${result}\n` + separator;
         // split result into an array by new line
         const resultarr = result.split(/\r?\n/);
         result = '';
@@ -98,6 +108,7 @@ function searchBuilder(query) {
               ' ';
           }
         }
+        querylog += `# Term: ${key}\n# Expanded result\n#-\n${result}\n` + separator;
         query[i] = query[i].replace(RegExp(key + '\\.\\.\\.'), result);
         //console.log(result);
       }
@@ -111,6 +122,10 @@ function searchBuilder(query) {
   searchQuery = searchQuery.replace(/\[/gs, '(');
   searchQuery = searchQuery.replace(/\]/gs, ')');
   //console.log('Final query: ' + searchQuery);
+  querylog += `# Final query\n#-\n${searchQuery}\n` + separator;  
+  if (argv.save) {
+    fs.writeFileSync(argv.save, querylog);
+  };
   return searchQuery;
 }
 
