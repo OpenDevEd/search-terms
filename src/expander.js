@@ -45,6 +45,7 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .argv;
 
+
 let result = searchBuilder(argv.query);
 if (argv.googlescholar) {
   result = result.replace(/AND/g, ' ');
