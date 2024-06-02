@@ -40,23 +40,46 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     description: 'Provide a filename where the search strings and expansions are saved. Records are separated by \\x1E'
   })
+  .option('output', {
+    alias: 'o',
+    type: 'string',
+    description: 'Provide a filename where the expanded search term is saved.'
+  })
+  .option('fail', {
+    alias: 'f',
+    type: 'boolean',
+    description: 'Throw error if a search string does not expand.'
+  })
   .command('$0 <query...>', 'Process search query.')
   .demandCommand(1)
   .strict()
   .help()
   .argv;
 
-
-let result = searchBuilder(argv.query);
-if (argv.googlescholar) {
-  result = result.replace(/AND/g, ' ');
+let output = { "input":  [ ...argv.query ] };
+//console.log(output);
+let res = searchBuilder(argv, argv.query);
+output = { ...output, ...res };
+let result = res.searchQuery;
+const status = res.status;
+if (argv.save) {
+  fs.writeFileSync(argv.save, res.querylog);
 };
 if (argv.length) {
   console.log("#length=" + result.length);
 }
+if (argv.output) {
+  fs.writeFileSync(argv.output, JSON.stringify(output, null, 2));
+};
 console.log(result);
+if (argv.fail && res.status === 'fail') {
+  console.log("ERROR: An error occurred while expanding search terms.");
+  process.exit(1);
+} else {
+  process.exit(0);
+};
 
-function searchBuilder(query) {
+function searchBuilder(argv, query) {
   const separator = '\x1E';
   let querylog = "# Query\n#-\n" + query + "\n" + separator;
   //let isOr = false;
@@ -78,6 +101,13 @@ function searchBuilder(query) {
         }
         querylog += `# File: ${file}\n`;
         // TODO: Throw error if file does not exist
+        if (!fs.existsSync(file)) {
+          querylog += `# error: Did not find expanded terms.\n`;
+          // console.log(argv);
+          if (argv.fail) {
+            return { searchQuery, querylog, status: "fail" };
+          };
+        };
         //console.log("f="+file);
         let result = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : key;
         querylog += `# Result\n#-\n${result}\n` + separator;
@@ -125,10 +155,10 @@ function searchBuilder(query) {
   searchQuery = searchQuery.replace(/\]/gs, ')');
   //console.log('Final query: ' + searchQuery);
   querylog += `# Final query\n#-\n${searchQuery}\n` + separator;  
-  if (argv.save) {
-    fs.writeFileSync(argv.save, querylog);
+  if (argv.googlescholar) {
+    searchQuery = searchQuery.replace(/AND/g, ' ');
   };
-  return searchQuery;
+  return { searchQuery, querylog, status: "success" };
 }
 
 function sanitise(str) {
