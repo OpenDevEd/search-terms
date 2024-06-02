@@ -18,7 +18,8 @@ The following have special meaning: #- or #OR or #AND.
 For exmples, see searchterms/ssa.txt and searchterms/test.txt.
 */
 
-fs = require('fs');
+const fs = require('fs');
+const os = require('os');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
