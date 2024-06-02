@@ -13,18 +13,20 @@ my $help = "";
 my $string = "";
 my $number = "";
 use Getopt::Long;
+my $count = "";
 GetOptions (
     "string=s" => \$string, 
     "help" => \$help, 
     "number=f" => \$number, 
+    "count" => \$count,
     ) or die("Error in command line arguments\n");
 
 &main();
-
 sub main() {
     while (<DATA>) {
 	s/\n//;
-	my $terms = `search-terms-expander $_`;
+	#my $terms = `search-terms-expander $_`;
+	my $terms = $_;
 	my $file = $_;
 	$file =~ s/\W/_/sg;
 	$terms =~ s/\n//;
@@ -34,8 +36,15 @@ sub main() {
 	    say "File variant exists: $filex";
 	    next;
 	};
-	system "scholarly-cli --search '$terms' --limit 1000 --year_low 2011 --year_high 2025 --save $filex";
-	system "gzip $filex.json";
+	my $search = "scholarly-cli --search '$terms' --limit 1000 --date 2011-2025 ";
+	if ($count) {
+	    say "-------- $_ -------------";
+	    #system $search . "--count 2>&1 | grep 'Total number of results'";
+	    system $search . "--count";
+	} else {
+	    system $search . "--save $filex";
+	    system "gzip $filex.json";
+	};
     };
 };
 
